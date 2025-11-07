@@ -1,0 +1,13 @@
+# Simple ComfyUI Worker Dockerfile
+FROM runpod/worker-comfyui:5.5.0-sdxl
+
+# Install custom nodes (optional - uncomment and add your desired nodes)
+# RUN comfy-node-install comfyui-kjnodes comfyui-ic-light
+
+# Download models (optional - uncomment and configure for your needs)
+# RUN comfy model download --url https://your-model-url.safetensors \
+#     --relative-path models/checkpoints \
+#     --filename your-model.safetensors
+
+# Copy static input files (optional - create an input/ folder if needed)
+# COPY input/ /comfyui/input/
