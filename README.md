@@ -18,8 +18,8 @@ Pull and run a stable versioned image (recommended for production):
 
 ```bash
 # Use a specific version (recommended)
-docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:v1.0.0
-docker run --gpus all -p 8188:8188 ghcr.io/frdrcbrg/comfy-worker-minimal:v1.0.0
+docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:1.1.0
+docker run --gpus all -p 8188:8188 ghcr.io/frdrcbrg/comfy-worker-minimal:1.1.0
 
 # Or use latest from main branch (for development)
 docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:main
@@ -27,9 +27,9 @@ docker run --gpus all -p 8188:8188 ghcr.io/frdrcbrg/comfy-worker-minimal:main
 ```
 
 **Available Image Tags:**
-- `v1.0.0` - Specific patch version (most stable)
-- `v1.0` - Latest patch of minor version
-- `v1` - Latest minor version
+- `1.1.0` - Specific patch version (most stable)
+- `1.1` - Latest patch of minor version
+- `1` - Latest minor version
 - `main` - Latest development build
 - `sha-*` - Specific commit builds
 
@@ -85,13 +85,13 @@ COPY input/ /comfyui/input/
 **Option 1: Use Pre-built Image**
 1. Go to [RunPod Templates](https://www.runpod.io/console/templates)
 2. Create a new template
-3. Use image: `ghcr.io/frdrcbrg/comfy-worker-minimal:v1.0.0`
+3. Use image: `ghcr.io/frdrcbrg/comfy-worker-minimal:1.1`
 4. Deploy as a serverless endpoint or GPU pod
 
 **Option 2: Use Customized Image**
 1. Fork this repository and customize the Dockerfile
 2. Your GitHub Actions will automatically build and publish to GHCR
-3. Use your custom image: `ghcr.io/your-username/comfy-worker-minimal:v1.0.0`
+3. Use your custom image: `ghcr.io/your-username/comfy-worker-minimal:1.1`
 4. Create a RunPod template with your image
 
 **Environment Variables** (optional):

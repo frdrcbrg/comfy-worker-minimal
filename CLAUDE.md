@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a minimal Docker-based template for creating custom ComfyUI workers that run on RunPod. The project intentionally contains minimal files and is designed to be extended with custom nodes, models, and configurations.
+This is a minimal Docker-based template for creating custom ComfyUI workers that run on RunPod or any containerized GPU environment. The project intentionally contains minimal files and is designed to be extended with custom nodes, models, and configurations.
 
 ## Architecture
 
 **Base Image**: The Dockerfile extends `runpod/worker-comfyui:5.5.0-base`, which provides:
-- A clean ComfyUI installation
+- A clean ComfyUI installation (no pre-packaged models)
 - The `comfy-cli` tooling (including `comfy-node-install` and `comfy model download`)
 - Python runtime with GPU support
 - RunPod worker SDK integration
@@ -21,46 +21,68 @@ This is a minimal Docker-based template for creating custom ComfyUI workers that
 
 ## Common Commands
 
-### Using Pre-built Images from GitHub Container Registry
+### Building and Testing Locally
 ```bash
-# Pull the latest image
-docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:main
-
-# Or pull a specific version
-docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:v1.0.0
-```
-
-### Building the Docker Image Locally
-```bash
+# Build the image
 docker build -t comfy-worker-minimal .
-```
 
-### Testing Locally
-```bash
+# Run locally (requires GPU)
 docker run --gpus all -p 8188:8188 comfy-worker-minimal
 ```
 
-## CI/CD
+### Using Pre-built Images
+```bash
+# Pull specific version (recommended for production)
+docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:1.1.0
 
-**GitHub Actions**: The repository includes a workflow (`.github/workflows/docker-build.yml`) that automatically:
-- Builds the Docker image on every push to `main`
-- Publishes images to GitHub Container Registry (`ghcr.io`)
-- Creates tagged images for version releases (e.g., `v1.0.0`)
-- Uses Docker layer caching for faster builds
+# Pull flexible versions
+docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:1.1  # Latest patch
+docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:1    # Latest minor
 
-**Image Tags**:
-- `main` - Latest build from the main branch
-- `v*` - Version tags (e.g., `v1.0.0`, `v1.1.0`)
-- `sha-*` - Commit-specific tags for reproducibility
+# Pull latest development
+docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:main
+```
+
+### Release Management
+```bash
+# Create a new release using GitHub CLI (recommended)
+gh release create v1.2.0 --title "v1.2.0 - Feature Description" --notes "Release notes here"
+
+# Or create manually with git tags
+git tag -a v1.2.0 -m "Release v1.2.0: Description"
+git push origin v1.2.0
+```
+
+## CI/CD Workflow
+
+**GitHub Actions** (`.github/workflows/docker-build.yml`):
+- **Triggers**: Push to `main`, version tags (`v*`), pull requests
+- **Outputs**: Multi-tagged Docker images published to `ghcr.io/frdrcbrg/comfy-worker-minimal`
+- **Tag Strategy**:
+  - Git tag `v1.2.3` → Creates Docker tags: `1.2.3`, `1.2`, `1`, `sha-abc123`
+  - Push to `main` → Creates Docker tag: `main`
+  - Note: The `v` prefix is stripped from semantic version tags
+- **Optimizations**: Uses GitHub Actions cache for Docker layer caching
+
+## Versioning Strategy
+
+This project uses **Semantic Versioning** (SemVer):
+- **MAJOR** (v2.0.0): Breaking changes (e.g., upgrade base image to new major version)
+- **MINOR** (v1.1.0): New features, backward compatible (e.g., add pre-installed custom nodes)
+- **PATCH** (v1.0.1): Bug fixes and documentation updates
 
 ## Key Conventions
 
-**Model Paths**: When downloading models, use correct `--relative-path` values that match ComfyUI's directory structure:
-- `models/checkpoints` - For checkpoint models
-- `models/loras` - For LoRA models
-- `models/vae` - For VAE models
-- `models/clip` - For CLIP models
+**Model Paths**: When downloading models in Dockerfile, use correct `--relative-path` values:
+- `models/checkpoints` - Checkpoint models
+- `models/loras` - LoRA models
+- `models/vae` - VAE models
+- `models/clip` - CLIP models
+- `models/controlnet` - ControlNet models
 
-**Custom Node Installation**: Use the `comfy-node-install` command (not standard `comfy-cli`) as it provides better error reporting. Find node names at the Comfy Registry.
+**Custom Node Installation**: Use `comfy-node-install` (not standard `comfy-cli`) for better error reporting. Find node names at [Comfy Registry](https://registry.comfy.org/).
 
-**Version Tags**: The base image uses specific tags like `-sdxl` which includes SDXL models pre-packaged, or `-base` for clean installs. Update version number (e.g., `5.5.0`) as needed from the runpod/worker-comfyui releases.
+**Base Image Variants**:
+- `-base` suffix: Clean install without models (current choice)
+- `-sdxl` suffix: Includes SDXL models pre-packaged
+- Update base image version (e.g., `5.5.0`) from [runpod/worker-comfyui releases](https://github.com/runpod-workers/worker-comfyui/releases)
