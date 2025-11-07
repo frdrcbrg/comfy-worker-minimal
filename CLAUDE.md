@@ -8,7 +8,7 @@ This is a minimal Docker-based template for creating custom ComfyUI workers that
 
 ## Architecture
 
-**Base Image**: The Dockerfile extends `runpod/worker-comfyui:5.5.0-sdxl`, which provides:
+**Base Image**: The Dockerfile extends `runpod/worker-comfyui:5.5.0-base`, which provides:
 - A clean ComfyUI installation
 - The `comfy-cli` tooling (including `comfy-node-install` and `comfy model download`)
 - Python runtime with GPU support

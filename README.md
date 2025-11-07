@@ -4,7 +4,7 @@ A minimal Docker-based template for creating custom ComfyUI workers that run on 
 
 ## Features
 
-- 🚀 Based on `runpod/worker-comfyui:5.5.0-sdxl` with SDXL models pre-installed
+- 🚀 Based on `runpod/worker-comfyui:5.5.0-base` for a clean, minimal setup
 - 🔧 Easy customization via simple Dockerfile modifications
 - 📦 Pre-built images available on GitHub Container Registry
 - ⚡ GitHub Actions CI/CD for automatic builds

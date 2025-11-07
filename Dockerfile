@@ -1,5 +1,5 @@
 # Simple ComfyUI Worker Dockerfile
-FROM runpod/worker-comfyui:5.5.0-sdxl
+FROM runpod/worker-comfyui:5.5.0-base
 
 # Install custom nodes (optional - uncomment and add your desired nodes)
 # RUN comfy-node-install comfyui-kjnodes comfyui-ic-light
