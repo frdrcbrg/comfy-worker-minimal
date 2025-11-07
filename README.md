@@ -103,6 +103,95 @@ COPY input/ /comfyui/input/
 COMFYUI_PORT=8188
 ```
 
+## Storage Configuration
+
+### S3 Storage for Generated Images
+
+By default, ComfyUI workers return generated images as base64-encoded strings. For production use, configure S3 storage to automatically upload images to your bucket.
+
+#### Configure S3 Environment Variables
+
+Add these environment variables to your RunPod template:
+
+```bash
+BUCKET_ENDPOINT_URL=https://your-bucket-name.s3.us-east-1.amazonaws.com
+BUCKET_ACCESS_KEY_ID=AKIA...
+BUCKET_SECRET_ACCESS_KEY=your-secret-key
+```
+
+#### AWS Setup Requirements
+
+1. **Create an S3 Bucket**
+   - Choose your preferred AWS region
+   - Enable appropriate access settings
+
+2. **Create IAM User**
+   - Create an IAM user with programmatic access
+   - Attach a policy with `s3:PutObject` permission:
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Action": ["s3:PutObject", "s3:PutObjectAcl"],
+         "Resource": "arn:aws:s3:::your-bucket-name/*"
+       }
+     ]
+   }
+   ```
+
+3. **Get Credentials**
+   - Copy the Access Key ID and Secret Access Key
+   - Use these for the environment variables above
+
+#### Output Format Changes
+
+**Without S3 (default):**
+```json
+{
+  "type": "base64",
+  "data": "iVBORw0KGgoAAAANS..."
+}
+```
+
+**With S3 configured:**
+```json
+{
+  "type": "s3_url",
+  "data": "https://your-bucket.s3.amazonaws.com/job-id/image.png"
+}
+```
+
+#### S3-Compatible Storage
+
+This works with any S3-compatible storage provider:
+- **AWS S3** - Standard option
+- **Cloudflare R2** - No egress fees
+- **DigitalOcean Spaces** - Simple pricing
+- **Backblaze B2** - Cost-effective
+- **MinIO** - Self-hosted option
+
+Just use the appropriate endpoint URL for your provider.
+
+### Network Volumes
+
+Network Volumes are recommended for **storing models**, not outputs:
+
+- **Serverless**: Mounts at `/runpod-volume`
+- **Pods**: Mounts at `/workspace`
+- **Use case**: Persistent model storage shared across workers
+- **Setup**: Attach in RunPod template under "Advanced > Select Network Volume"
+
+For organizing models in a Network Volume:
+```
+/models/checkpoints/  - Checkpoint models
+/models/loras/        - LoRA models
+/models/vae/          - VAE models
+/models/clip/         - CLIP models
+/models/controlnet/   - ControlNet models
+```
+
 ### Versioning
 
 This project uses [Semantic Versioning](https://semver.org/):
