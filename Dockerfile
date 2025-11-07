@@ -12,8 +12,3 @@ FROM runpod/worker-comfyui:5.4.1-base-cuda12.8.1
 
 # Copy static input files (optional - create an input/ folder if needed)
 # COPY input/ /comfyui/input/
-
-# Clean up to reduce image size
-RUN apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    pip cache purge 2>/dev/null || true
