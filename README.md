@@ -14,12 +14,24 @@ A minimal Docker-based template for creating custom ComfyUI workers that run on 
 
 ### Using Pre-built Images
 
-Pull and run the latest pre-built image:
+Pull and run a stable versioned image (recommended for production):
 
 ```bash
+# Use a specific version (recommended)
+docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:v1.0.0
+docker run --gpus all -p 8188:8188 ghcr.io/frdrcbrg/comfy-worker-minimal:v1.0.0
+
+# Or use latest from main branch (for development)
 docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:main
 docker run --gpus all -p 8188:8188 ghcr.io/frdrcbrg/comfy-worker-minimal:main
 ```
+
+**Available Image Tags:**
+- `v1.0.0` - Specific patch version (most stable)
+- `v1.0` - Latest patch of minor version
+- `v1` - Latest minor version
+- `main` - Latest development build
+- `sha-*` - Specific commit builds
 
 ### Building Locally
 
@@ -70,23 +82,42 @@ COPY input/ /comfyui/input/
 
 ### Deploy to RunPod
 
-1. Build and push your customized image to a registry (Docker Hub, GHCR, etc.)
-2. Create a new RunPod template using your image
-3. Deploy as a serverless endpoint or GPU pod
+**Option 1: Use Pre-built Image**
+1. Go to [RunPod Templates](https://www.runpod.io/console/templates)
+2. Create a new template
+3. Use image: `ghcr.io/frdrcbrg/comfy-worker-minimal:v1.0.0`
+4. Deploy as a serverless endpoint or GPU pod
 
-### Version Tags
+**Option 2: Use Customized Image**
+1. Fork this repository and customize the Dockerfile
+2. Your GitHub Actions will automatically build and publish to GHCR
+3. Use your custom image: `ghcr.io/your-username/comfy-worker-minimal:v1.0.0`
+4. Create a RunPod template with your image
 
-Images are automatically tagged on GitHub Container Registry:
-- `main` - Latest build from main branch
-- `v1.0.0` - Semantic version tags
-- `sha-abc123` - Commit-specific tags
+**Environment Variables** (optional):
+```
+COMFYUI_PORT=8188
+```
 
-Create a version release:
+### Versioning
+
+This project uses [Semantic Versioning](https://semver.org/):
+- **MAJOR** (v2.0.0): Breaking changes (e.g., base image upgrade)
+- **MINOR** (v1.1.0): New features, backward compatible (e.g., new custom nodes)
+- **PATCH** (v1.0.1): Bug fixes and documentation updates
+
+Create a new release:
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+# Using GitHub CLI (recommended)
+gh release create v1.1.0 --title "v1.1.0 - Feature Update" --notes "Description of changes"
+
+# Or manually with git tags
+git tag -a v1.1.0 -m "Release v1.1.0"
+git push origin v1.1.0
 ```
+
+GitHub Actions will automatically build and publish the Docker images with appropriate tags.
 
 ## Requirements
 
