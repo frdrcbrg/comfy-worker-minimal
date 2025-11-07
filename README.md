@@ -17,9 +17,13 @@ A minimal Docker-based template for creating custom ComfyUI workers that run on 
 Pull and run a stable versioned image (recommended for production):
 
 ```bash
-# Use a specific version (recommended)
-docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:1.1.0
-docker run --gpus all -p 8188:8188 ghcr.io/frdrcbrg/comfy-worker-minimal:1.1.0
+# Use a specific version (recommended for production)
+docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:1.2.0
+docker run --gpus all -p 8188:8188 ghcr.io/frdrcbrg/comfy-worker-minimal:1.2.0
+
+# Or use flexible versioning
+docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:1.2
+docker run --gpus all -p 8188:8188 ghcr.io/frdrcbrg/comfy-worker-minimal:1.2
 
 # Or use latest from main branch (for development)
 docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:main
@@ -27,9 +31,9 @@ docker run --gpus all -p 8188:8188 ghcr.io/frdrcbrg/comfy-worker-minimal:main
 ```
 
 **Available Image Tags:**
-- `1.1.0` - Specific patch version (most stable)
-- `1.1` - Latest patch of minor version
-- `1` - Latest minor version
+- `1.2.0` - Latest stable version with CUDA 12.8.1 and RTX 5090 support
+- `1.2` - Latest v1.2.x patch
+- `1` - Latest v1.x minor version
 - `main` - Latest development build
 - `sha-*` - Specific commit builds
 
@@ -85,13 +89,13 @@ COPY input/ /comfyui/input/
 **Option 1: Use Pre-built Image**
 1. Go to [RunPod Templates](https://www.runpod.io/console/templates)
 2. Create a new template
-3. Use image: `ghcr.io/frdrcbrg/comfy-worker-minimal:1.1`
+3. Use image: `ghcr.io/frdrcbrg/comfy-worker-minimal:1.2`
 4. Deploy as a serverless endpoint or GPU pod
 
 **Option 2: Use Customized Image**
 1. Fork this repository and customize the Dockerfile
 2. Your GitHub Actions will automatically build and publish to GHCR
-3. Use your custom image: `ghcr.io/your-username/comfy-worker-minimal:1.1`
+3. Use your custom image: `ghcr.io/your-username/comfy-worker-minimal:1.2`
 4. Create a RunPod template with your image
 
 **Environment Variables** (optional):
@@ -110,11 +114,11 @@ Create a new release:
 
 ```bash
 # Using GitHub CLI (recommended)
-gh release create v1.1.0 --title "v1.1.0 - Feature Update" --notes "Description of changes"
+gh release create v1.3.0 --title "v1.3.0 - Feature Update" --notes "Description of changes"
 
 # Or manually with git tags
-git tag -a v1.1.0 -m "Release v1.1.0"
-git push origin v1.1.0
+git tag -a v1.3.0 -m "Release v1.3.0"
+git push origin v1.3.0
 ```
 
 GitHub Actions will automatically build and publish the Docker images with appropriate tags.
