@@ -1,5 +1,6 @@
 # Simple ComfyUI Worker Dockerfile
-FROM runpod/worker-comfyui:5.5.0-base
+# Using CUDA 12.8.1 for RTX 5090 (Blackwell) support
+FROM runpod/worker-comfyui:5.4.1-base-cuda12.8.1
 
 # Install custom nodes (optional - uncomment and add your desired nodes)
 # RUN comfy-node-install comfyui-kjnodes comfyui-ic-light

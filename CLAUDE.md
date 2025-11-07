@@ -8,8 +8,9 @@ This is a minimal Docker-based template for creating custom ComfyUI workers that
 
 ## Architecture
 
-**Base Image**: The Dockerfile extends `runpod/worker-comfyui:5.5.0-base`, which provides:
+**Base Image**: The Dockerfile extends `runpod/worker-comfyui:5.4.1-base-cuda12.8.1`, which provides:
 - A clean ComfyUI installation (no pre-packaged models)
+- CUDA 12.8.1 for RTX 5090 (Blackwell) and latest GPU support
 - The `comfy-cli` tooling (including `comfy-node-install` and `comfy model download`)
 - Python runtime with GPU support
 - RunPod worker SDK integration
@@ -83,6 +84,7 @@ This project uses **Semantic Versioning** (SemVer):
 **Custom Node Installation**: Use `comfy-node-install` (not standard `comfy-cli`) for better error reporting. Find node names at [Comfy Registry](https://registry.comfy.org/).
 
 **Base Image Variants**:
-- `-base` suffix: Clean install without models (current choice)
+- `-base-cuda12.8.1` suffix: Clean install with CUDA 12.8.1 (current choice, supports RTX 5090)
+- `-base` suffix: Clean install without models
 - `-sdxl` suffix: Includes SDXL models pre-packaged
-- Update base image version (e.g., `5.5.0`) from [runpod/worker-comfyui releases](https://github.com/runpod-workers/worker-comfyui/releases)
+- Update base image version from [runpod/worker-comfyui releases](https://github.com/runpod-workers/worker-comfyui/releases) or [Docker Hub tags](https://hub.docker.com/r/runpod/worker-comfyui/tags)
