@@ -21,7 +21,16 @@ This is a minimal Docker-based template for creating custom ComfyUI workers that
 
 ## Common Commands
 
-### Building the Docker Image
+### Using Pre-built Images from GitHub Container Registry
+```bash
+# Pull the latest image
+docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:main
+
+# Or pull a specific version
+docker pull ghcr.io/frdrcbrg/comfy-worker-minimal:v1.0.0
+```
+
+### Building the Docker Image Locally
 ```bash
 docker build -t comfy-worker-minimal .
 ```
@@ -31,11 +40,18 @@ docker build -t comfy-worker-minimal .
 docker run --gpus all -p 8188:8188 comfy-worker-minimal
 ```
 
-### Pushing to Registry
-```bash
-docker tag comfy-worker-minimal your-registry/comfy-worker-minimal:version
-docker push your-registry/comfy-worker-minimal:version
-```
+## CI/CD
+
+**GitHub Actions**: The repository includes a workflow (`.github/workflows/docker-build.yml`) that automatically:
+- Builds the Docker image on every push to `main`
+- Publishes images to GitHub Container Registry (`ghcr.io`)
+- Creates tagged images for version releases (e.g., `v1.0.0`)
+- Uses Docker layer caching for faster builds
+
+**Image Tags**:
+- `main` - Latest build from the main branch
+- `v*` - Version tags (e.g., `v1.0.0`, `v1.1.0`)
+- `sha-*` - Commit-specific tags for reproducibility
 
 ## Key Conventions
 
