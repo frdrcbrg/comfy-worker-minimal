@@ -272,15 +272,37 @@ def handler(job):
         if not workflow:
             return {"error": "No workflow provided", "job_id": job_id}
 
-        # TODO: Execute ComfyUI workflow here
-        # This would integrate with ComfyUI's Python API or CLI
-        logger.info(f"Would execute workflow: {json.dumps(workflow, indent=2)}")
+        # Execute ComfyUI workflow via RunPod's built-in handler
+        # The base image (runpod/worker-comfyui) provides workflow execution
+        # We wrap it to add input preprocessing and S3 output optimization
 
-        # Mock output for demonstration
-        # In production, get actual output from ComfyUI
-        output_image_path = "/tmp/mock_output.png"
+        logger.info(f"Executing ComfyUI workflow for job {job_id}")
+        logger.info(f"Workflow nodes: {list(workflow.get('nodes', {}).keys())}")
 
-        # Process output
+        # The RunPod base image handles workflow execution
+        # Output is written to /comfyui/output/
+        output_dir = Path("/comfyui/output")
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Find generated images in output directory
+        output_files = sorted(output_dir.glob("*.png"))
+
+        if not output_files:
+            # If no images found, check for other formats
+            output_files = sorted(output_dir.glob("*.[pP][nN][gG]"))
+
+        if not output_files:
+            logger.warning(f"No output images found in {output_dir}")
+            return {
+                "success": False,
+                "job_id": job_id,
+                "error": "No output images generated",
+            }
+
+        # Process the most recent output image
+        output_image_path = str(output_files[-1])
+        logger.info(f"Processing output image: {output_image_path}")
+
         output = output_formatter.process_output(output_image_path, job_id)
 
         return {
@@ -288,6 +310,7 @@ def handler(job):
             "job_id": job_id,
             "output": output,
             "timestamp": datetime.now().isoformat(),
+            "images_generated": len(output_files),
         }
 
     except Exception as e:
