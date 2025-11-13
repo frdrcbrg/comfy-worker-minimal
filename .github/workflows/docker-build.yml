@@ -30,11 +30,32 @@ jobs:
         run: |
           echo "Disk space before cleanup:"
           df -h
+
+          # Remove unnecessary packages and tools
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /opt/ghc
           sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /opt/hostedtoolcache/go
+          sudo rm -rf /opt/hostedtoolcache/node
+          sudo rm -rf /opt/hostedtoolcache/PyPy
+          sudo rm -rf /opt/hostedtoolcache/Ruby
+          sudo rm -rf /usr/local/graalvm
+          sudo rm -rf /usr/lib/jvm
+
+          # Clean package managers
+          sudo apt-get update
+          sudo apt-get remove -y '^dotnet-.*'
+          sudo apt-get remove -y '^aspnetcore-.*'
+          sudo apt-get remove -y '^ghc-.*'
+          sudo apt-get clean
+          sudo apt-get autoclean
+          sudo apt-get autoremove -y
+
+          # Clean docker
           sudo docker image prune -af
+          sudo docker builder prune -af
+
           echo "Disk space after cleanup:"
           df -h
 
@@ -74,7 +95,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
-          build-args: |
-            BUILDKIT_INLINE_CACHE=1
+          cache-to: type=gha,mode=min
           timeout: 7200
+          provenance: false
+          sbom: false
