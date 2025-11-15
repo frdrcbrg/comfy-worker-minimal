@@ -49,13 +49,14 @@ class S3Manager:
         else:
             logger.info("S3 storage disabled. Missing environment variables.")
 
-    def upload_image(self, image_data: bytes, filename: str) -> Optional[str]:
+    def upload_image(self, image_data: bytes, filename: str, use_date_path: bool = True) -> Optional[str]:
         """
         Upload image to S3 and return the URL.
 
         Args:
             image_data: Raw image bytes
-            filename: Target filename (e.g., 'job-id/image.png')
+            filename: Target filename (e.g., 'image.png')
+            use_date_path: If True, organize by date (YYYY-MM-DD); if False, use flat structure
 
         Returns:
             S3 URL or None if upload failed
@@ -64,14 +65,21 @@ class S3Manager:
             return None
 
         try:
+            # Organize by date if requested
+            if use_date_path:
+                date_str = datetime.now().strftime("%Y-%m-%d")
+                s3_key = f"{date_str}/{filename}"
+            else:
+                s3_key = filename
+
             self.s3_client.put_object(
                 Bucket=self.bucket_name,
-                Key=filename,
+                Key=s3_key,
                 Body=image_data,
                 ContentType="image/png",
             )
             # Construct URL based on endpoint
-            url = f"{self.endpoint_url.rstrip('/')}/{self.bucket_name}/{filename}"
+            url = f"{self.endpoint_url.rstrip('/')}/{self.bucket_name}/{s3_key}"
             logger.info(f"Image uploaded to S3: {url}")
             return url
         except ClientError as e:
@@ -190,17 +198,17 @@ class OutputFormatter:
         self.s3_manager = s3_manager
 
     def process_output(
-        self, output_path: str, job_id: str
+        self, output_path: str, job_id: str = None
     ) -> Dict[str, Any]:
         """
         Process ComfyUI output image.
 
-        If S3 is configured, uploads to S3 and returns URL.
+        If S3 is configured, uploads to S3 and returns URL (organized by date).
         Otherwise, returns base64-encoded image.
 
         Args:
             output_path: Path to output image file
-            job_id: Job ID for S3 organization
+            job_id: (Deprecated) Job ID - no longer used for S3 organization
 
         Returns:
             Dict with format: {"type": "s3_url"|"base64", "data": "..."}
@@ -216,8 +224,9 @@ class OutputFormatter:
             # Try S3 upload first
             if self.s3_manager.enabled:
                 filename = Path(output_path).name
+                # Upload with date-based organization (YYYY-MM-DD/filename)
                 s3_url = self.s3_manager.upload_image(
-                    image_bytes, f"{job_id}/{filename}"
+                    image_bytes, filename, use_date_path=True
                 )
                 if s3_url:
                     return {"type": "s3_url", "data": s3_url}
