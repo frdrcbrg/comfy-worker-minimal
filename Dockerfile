@@ -11,8 +11,20 @@ COPY custom_handler.py /
 # Set custom handler as entry point
 ENV RUNPOD_DEBUG=false
 
-# Install custom nodes (optional - uncomment and add your desired nodes)
-# RUN comfy-node-install comfyui-kjnodes comfyui-ic-light
+# Install custom nodes
+RUN comfy-node-install \
+    "https://github.com/kijai/ComfyUI-KJNodes" \
+    "https://github.com/MoonGoblinDev/Civicomfy" \
+    "https://github.com/ltdrdata/ComfyUI-Impact-Pack" \
+    "https://github.com/rgthree/rgthree-comfy" \
+    "https://github.com/cubiq/ComfyUI_essentials" \
+    "https://github.com/ltdrdata/ComfyUI-Impact-Subpack" \
+    "https://github.com/chrisgoringe/cg-use-everywhere" \
+    "https://github.com/ssitu/ComfyUI_UltimateSDUpscale" \
+    "https://github.com/lquesada/ComfyUI-Inpaint-CropAndStitch" \
+    "https://github.com/glifxyz/ComfyUI-GlifNodes" \
+    "https://github.com/giriss/comfy-image-saver" \
+    "https://github.com/kijai/ComfyUI-WanVideoWrapper"
 
 # Download models (optional - uncomment and configure for your needs)
 # RUN comfy model download --url https://your-model-url.safetensors \
