@@ -13,18 +13,14 @@ ENV RUNPOD_DEBUG=false
 
 # Install custom nodes
 RUN comfy-node-install \
-    "https://github.com/kijai/ComfyUI-KJNodes" \
-    "https://github.com/MoonGoblinDev/Civicomfy" \
     "https://github.com/ltdrdata/ComfyUI-Impact-Pack" \
     "https://github.com/rgthree/rgthree-comfy" \
     "https://github.com/cubiq/ComfyUI_essentials" \
-    "https://github.com/ltdrdata/ComfyUI-Impact-Subpack" \
     "https://github.com/chrisgoringe/cg-use-everywhere" \
-    "https://github.com/ssitu/ComfyUI_UltimateSDUpscale" \
-    "https://github.com/lquesada/ComfyUI-Inpaint-CropAndStitch" \
-    "https://github.com/glifxyz/ComfyUI-GlifNodes" \
-    "https://github.com/giriss/comfy-image-saver" \
-    "https://github.com/kijai/ComfyUI-WanVideoWrapper"
+    "https://github.com/ssitu/ComfyUI_UltimateSDUpscale" && \
+    pip cache purge && \
+    apt-get clean && \
+    rm -rf /tmp/* /var/tmp/* /var/cache/apt/*
 
 # Download models (optional - uncomment and configure for your needs)
 # RUN comfy model download --url https://your-model-url.safetensors \
